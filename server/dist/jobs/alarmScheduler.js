@@ -1,57 +1,40 @@
-import schedule from 'node-schedule';
-import memoryDB from '../db/memoryDB.js';
-import { getDayIndexForSchedule, logJob } from './utils.js';
+import logger from '../logger.js';
 import cbor from 'cbor';
 import moment from 'moment-timezone';
 import { executeFunction } from '../8sleep/deviceApi.js';
-import { getFranken } from '../8sleep/frankenServer.js';
 export const scheduleAlarm = (settingsData, side, day, dailySchedule) => {
-    if (!dailySchedule.power.enabled)
+    if (!dailySchedule.power.enabled || !dailySchedule.alarm.enabled)
         return;
-    if (!dailySchedule.alarm.enabled)
+    if (settingsData[side].awayMode || !settingsData.timeZone)
         return;
-    if (settingsData[side].awayMode)
+    // Get current time in the correct timezone
+    const now = moment.tz(settingsData.timeZone);
+    const currentDay = now.format('dddd').toLowerCase();
+    // Only schedule if this is today's schedule
+    if (day !== currentDay) {
+        // logger.debug(`[scheduleAlarm] Skipping ${side} alarm for ${day} as it's not today (${currentDay})`);
         return;
-    if (settingsData.timeZone === null)
-        return;
-    const alarmRule = new schedule.RecurrenceRule();
-    const dayIndex = getDayIndexForSchedule(day, dailySchedule.power.off);
-    alarmRule.dayOfWeek = dayIndex;
-    const { time } = dailySchedule.alarm;
-    const [alarmHour, alarmMinute] = time.split(':').map(Number);
-    alarmRule.hour = alarmHour;
-    alarmRule.minute = alarmMinute;
-    alarmRule.tz = settingsData.timeZone;
-    logJob('Scheduling alarm job', side, day, dayIndex, time);
-    schedule.scheduleJob(`${side}-${day}-${time}-alarm`, alarmRule, async () => {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const currentTime = moment.tz(settingsData.timeZone);
-        const alarmTimeEpoch = currentTime.unix();
-        const alarmPayload = {
-            pl: dailySchedule.alarm.vibrationIntensity,
-            du: dailySchedule.alarm.duration,
-            pi: dailySchedule.alarm.vibrationPattern,
-            tt: alarmTimeEpoch,
-        };
-        const cborPayload = cbor.encode(alarmPayload);
-        const hexPayload = cborPayload.toString('hex');
-        const command = side === 'left' ? 'ALARM_LEFT' : 'ALARM_RIGHT';
-        const franken = await getFranken();
-        const resp = await franken.getDeviceStatus();
-        if (!resp[side].isOn) {
-            logJob('Skipping scheduled alarm, pod is off', side, day, dayIndex, time);
-            return;
-        }
-        logJob('Executing alarm job', side, day, dayIndex, time);
-        await executeFunction(command, hexPayload);
-        await memoryDB.read();
-        memoryDB.data[side].isAlarmVibrating = true;
-        await memoryDB.write();
-        setTimeout(async () => {
-            logJob('Clearing alarm job', side, day, dayIndex, time);
-            await memoryDB.read();
-            memoryDB.data[side].isAlarmVibrating = false;
-            await memoryDB.write();
-        }, dailySchedule.alarm.duration * 1_000);
+    }
+    // Create the target alarm time for today
+    const alarmMoment = moment.tz(dailySchedule.alarm.time, 'HH:mm', settingsData.timeZone);
+    // If the alarm time has passed for today, schedule it for tomorrow
+    if (alarmMoment.isBefore(now)) {
+        alarmMoment.add(1, 'day');
+        logger.debug(`[scheduleAlarm] Alarm time already passed, scheduling for tomorrow`);
+    }
+    logger.debug(`[scheduleAlarm] Scheduling ${side} alarm for ${side} on ${day} (${JSON.stringify(dailySchedule)})`);
+    logger.debug(`[scheduleAlarm] Alarm time will be: ${alarmMoment.format()}`);
+    const alarmPayload = {
+        pl: dailySchedule.alarm.vibrationIntensity,
+        du: dailySchedule.alarm.duration,
+        pi: dailySchedule.alarm.vibrationPattern,
+        tt: alarmMoment.unix(), // Future timestamp instead of current time
+    };
+    const command = side === 'left' ? 'ALARM_LEFT' : 'ALARM_RIGHT';
+    const hexPayload = cbor.encode(alarmPayload).toString('hex');
+    logger.debug(`[scheduleAlarm] Alarm Command: ${command} | Payload: ${JSON.stringify(alarmPayload)}`);
+    // Immediate command execution with future timestamp
+    executeFunction(command, hexPayload).then(() => {
+        logger.info(`Scheduled ${side} alarm for ${day} at ${dailySchedule.alarm.time} via device command`);
     });
 };

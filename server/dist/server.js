@@ -2,6 +2,7 @@ import express from 'express';
 import schedule from 'node-schedule';
 import logger from './logger.js';
 import { getFranken, getFrankenServer } from './8sleep/frankenServer.js';
+import { FrankenMonitor } from './8sleep/frankenMonitor.js';
 import './jobs/jobScheduler.js';
 // Setup code
 import setupMiddleware from './setup/middleware.js';
@@ -10,6 +11,7 @@ import config from './config.js';
 const port = 3000;
 const app = express();
 let server;
+let frankenMonitor;
 // Graceful Shutdown Function
 async function gracefulShutdown(signal) {
     logger.debug(`\nReceived ${signal}. Initiating graceful shutdown...`);
@@ -25,6 +27,9 @@ async function gracefulShutdown(signal) {
     await schedule.gracefulShutdown();
     // If we already got Franken instances, close them
     try {
+        if (frankenMonitor) {
+            frankenMonitor.stop();
+        }
         if (server) {
             // Stop accepting new connections
             server.close(() => {
@@ -54,6 +59,9 @@ async function initFranken() {
     await getFrankenServer();
     await getFranken();
     logger.info('Franken has been initialized successfully.');
+    // Initialize and start the FrankenMonitor
+    frankenMonitor = new FrankenMonitor();
+    await frankenMonitor.start();
 }
 // Main startup function
 async function startServer() {

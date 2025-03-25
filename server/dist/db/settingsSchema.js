@@ -11,6 +11,7 @@ export const SettingsSchema = z.object({
     timeZone: z.enum(TIME_ZONES).nullable(),
     left: SideSettingsSchema,
     right: SideSettingsSchema,
+    lastPrime: z.string().datetime().optional(),
     primePodDaily: z.object({
         enabled: z.boolean(),
         time: TimeSchema,

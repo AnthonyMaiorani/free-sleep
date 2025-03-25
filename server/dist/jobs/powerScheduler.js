@@ -1,8 +1,9 @@
 import schedule from 'node-schedule';
+import moment from 'moment-timezone';
+import logger from '../logger.js';
 import { updateDeviceStatus } from '../routes/deviceStatus/updateDeviceStatus.js';
 import { getDayIndexForSchedule, getDayOfWeekIndex, logJob } from './utils.js';
 import { executeAnalyzeSleep } from './analyzeSleep.js';
-import moment from 'moment-timezone';
 export const schedulePowerOn = (settingsData, side, day, power) => {
     if (!power.enabled)
         return;
@@ -37,11 +38,11 @@ const scheduleAnalyzeSleep = (dayOfWeekIndex, offHour, offMinute, timeZone, side
     dailyRule.minute = adjustedOffMinute;
     dailyRule.tz = timeZone;
     const time = `${String(offHour).padStart(2, '0')}:${String(adjustedOffMinute).padStart(2, '0')}`;
-    logJob('Scheduling daily sleep analyzer job', side, day, dayOfWeekIndex, time);
+    logger.debug(`Scheduling daily sleep analyzer job for ${side} side on ${day} at ${time}`);
     schedule.scheduleJob(`daily-analyze-sleep-${time}-${side}`, dailyRule, async () => {
-        logJob('Executing daily sleep analyzer job', side, day, dayOfWeekIndex, time);
+        logger.info(`Executing scheduled calibration job for side ${side} on ${day} at ${time}`);
         // Subtract a fixed start time
-        executeAnalyzeSleep(side, moment().subtract(12, 'hours').toISOString(), moment().add(3, 'hours').toISOString());
+        await executeAnalyzeSleep(side, moment().subtract(12, 'hours').toISOString(), moment().add(3, 'hours').toISOString());
     });
 };
 export const schedulePowerOffAndSleepAnalysis = (settingsData, side, day, power) => {

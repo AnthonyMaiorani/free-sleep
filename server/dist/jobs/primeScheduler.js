@@ -1,9 +1,8 @@
 import { exec } from 'child_process';
 import schedule from 'node-schedule';
-import logger from '../logger.js';
-import { updateDeviceStatus } from '../routes/deviceStatus/updateDeviceStatus.js';
-import { executeCalibrateSensors } from './calibrateSensors.js';
 import moment from 'moment-timezone';
+import logger from '../logger.js';
+import { executeCalibrateSensors } from './calibrateSensors.js';
 import settingsDB from '../db/settings.js';
 const scheduleRebootJob = (onHour, onMinute, timeZone) => {
     const dailyRule = new schedule.RecurrenceRule();
@@ -32,16 +31,21 @@ const scheduleRebootJob = (onHour, onMinute, timeZone) => {
         });
     });
 };
-const scheduleCalibrationJob = (onHour, onMinute, timeZone, side) => {
+const scheduleCalibrationJob = (onHour, onMinute, timeZone) => {
     const dailyRule = new schedule.RecurrenceRule();
     dailyRule.hour = onHour;
     dailyRule.minute = onMinute;
     dailyRule.tz = timeZone;
     const time = `${String(onHour).padStart(2, '0')}:${String(onMinute).padStart(2, '0')}`;
-    logger.debug(`Scheduling daily calibration job at ${time} for ${side}`);
-    schedule.scheduleJob(`daily-calibration-${time}-${side}`, dailyRule, async () => {
-        logger.info(`Executing scheduled calibration job for ${side}`);
-        executeCalibrateSensors(side, moment().subtract(6, 'hours').toISOString(), moment().toISOString());
+    logger.debug(`Scheduling daily calibration job at ${time} for both sides`);
+    schedule.scheduleJob(`daily-calibration-${time}`, dailyRule, async () => {
+        const timeRange = {
+            start: moment().subtract(6, 'hours').toISOString(),
+            end: moment().toISOString()
+        };
+        logger.info(`Executing scheduled calibration job for both sides (timeRange: ${timeRange.start} to ${timeRange.end})`);
+        await executeCalibrateSensors('left', timeRange.start, timeRange.end);
+        await executeCalibrateSensors('right', timeRange.start, timeRange.end);
     });
 };
 export const schedulePrimingRebootAndCalibration = (settingsData) => {
@@ -57,8 +61,7 @@ export const schedulePrimingRebootAndCalibration = (settingsData) => {
     dailyRule.minute = onMinute;
     dailyRule.tz = timeZone;
     scheduleRebootJob(onHour - 2, onMinute, timeZone);
-    scheduleCalibrationJob(onHour, 0, timeZone, 'left');
-    scheduleCalibrationJob(onHour, 30, timeZone, 'right');
+    scheduleCalibrationJob(onHour, 0, timeZone);
     logger.debug(`Scheduling daily prime job at ${primePodDaily.time}`);
     schedule.scheduleJob(`daily-priming-${time}`, dailyRule, async () => {
         logger.info(`Executing scheduled prime job`);

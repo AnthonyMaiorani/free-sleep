@@ -46,6 +46,13 @@ export class Franken {
         logger.debug(`cleanedArg: ${cleanedArg}`);
         await this.sendMessage(`${commandNumber}\n${cleanedArg}`);
     }
+    async getVariables() {
+        const command = "DEVICE_STATUS";
+        const commandNumber = frankenCommands[command];
+        const varResp = await this.sendMessage(commandNumber);
+        const parsedVars = Object.fromEntries(varResp.split("\n").map(l => l.split(" = ")));
+        return parsedVars;
+    }
     async getDeviceStatus() {
         const command = 'DEVICE_STATUS';
         const commandNumber = frankenCommands[command];
@@ -85,14 +92,21 @@ class FrankenServer {
     }
 }
 let frankenServer;
+let frankenServerPromise;
 export async function getFrankenServer() {
     // If we've already started it, reuse:
     if (frankenServer)
         return frankenServer;
     // Otherwise, start a new instance once:
-    frankenServer = await FrankenServer.start(config.dacSockPath);
-    logger.debug('FrankenServer started');
-    return frankenServer;
+    if (!frankenServerPromise) {
+        frankenServerPromise = (async () => {
+            const server = await FrankenServer.start(config.dacSockPath);
+            logger.debug('FrankenServer started');
+            frankenServer = server;
+            return server;
+        })();
+    }
+    return frankenServerPromise;
 }
 let franken;
 export async function getFranken() {
