@@ -18,13 +18,6 @@ export default function AwayNotification({ settings }: AwayNotificationProps) {
       </Alert>
     );
   }
-  if (settings?.[otherSide]?.awayMode) {
-    return (
-      <Alert severity="info">
-        Other side is in away mode, temperature settings will apply to both sides
-      </Alert>
-    );
-  }
   if (settings?.[side]?.awayMode) {
     return (
       <Alert severity="info" sx={ { transform: 'translateY(-100px)' } }>
