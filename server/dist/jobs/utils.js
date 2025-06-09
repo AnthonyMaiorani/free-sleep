@@ -14,12 +14,8 @@ function isEndTimeNextDay(endTime) {
     return endHour <= 12;
 }
 export function getDayIndexForSchedule(scheduleDay, time) {
-    if (isEndTimeNextDay(time)) {
-        return getNextDayOfWeekIndex(scheduleDay);
-    }
-    else {
-        return getDayOfWeekIndex(scheduleDay);
-    }
+    // always use the same‐day index (no wrap to next day)
+    return DAYS_OF_WEEK.indexOf(scheduleDay);
 }
 export function logJob(message, side, day, dayIndex, time) {
     const endDay = DAYS_OF_WEEK[dayIndex];

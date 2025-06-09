@@ -83,14 +83,8 @@ export default function TemperatureAdjustmentsAccordion({ displayCelsius }: { di
     const timeMoment = moment(time, 'HH:mm');
     const powerOnMoment = moment(selectedSchedule.power.on, 'HH:mm');
     const powerOffMoment = moment(selectedSchedule.power.off, 'HH:mm');
-
-    if (powerOffMoment.isBefore(powerOnMoment)) {
-      // Overnight schedule
-      return timeMoment.isAfter(powerOnMoment) || timeMoment.isBefore(powerOffMoment);
-    } else {
-      // Same day schedule
-      return timeMoment.isSameOrAfter(powerOnMoment) && timeMoment.isSameOrBefore(powerOffMoment);
-    }
+    // only allow times between on and off on the same day
+    return timeMoment.isSameOrAfter(powerOnMoment) && timeMoment.isSameOrBefore(powerOffMoment);
   };
 
   return (
@@ -108,17 +102,7 @@ export default function TemperatureAdjustmentsAccordion({ displayCelsius }: { di
         { /* Dynamic schedule rows */ }
         {
           selectedSchedule && Object.entries(selectedSchedule.temperatures)
-            .sort(([timeA], [timeB]) => {
-              const powerOnMoment = moment(selectedSchedule.power.on, 'HH:mm');
-              const momentA = moment(timeA, 'HH:mm');
-              const momentB = moment(timeB, 'HH:mm');
-
-              // Adjust times relative to `powerOnTime`
-              const adjustedA = momentA.isBefore(powerOnMoment) ? momentA.add(1, 'day') : momentA;
-              const adjustedB = momentB.isBefore(powerOnMoment) ? momentB.add(1, 'day') : momentB;
-
-              return adjustedA.diff(powerOnMoment) - adjustedB.diff(powerOnMoment);
-            })
+            .sort(([timeA], [timeB]) => timeA.localeCompare(timeB))
             .map(([time, temperature]) => (
               <Box
                 key={ time }
