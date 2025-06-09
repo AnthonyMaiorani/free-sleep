@@ -5,6 +5,7 @@ import { updateDeviceStatus } from '../routes/deviceStatus/updateDeviceStatus.js
 import { getDayIndexForSchedule, getDayOfWeekIndex, logJob } from './utils.js';
 import { executeAnalyzeSleep } from './analyzeSleep.js';
 export const schedulePowerOn = (settingsData, side, day, power) => {
+    if (power.enabled) return;
     if (!power.enabled)
         return;
     if (settingsData[side].awayMode)
@@ -46,6 +47,7 @@ const scheduleAnalyzeSleep = (dayOfWeekIndex, offHour, offMinute, timeZone, side
     });
 };
 export const schedulePowerOffAndSleepAnalysis = (settingsData, side, day, power) => {
+    if (power.enabled) return;
     if (!power.enabled)
         return;
     if (settingsData[side].awayMode)

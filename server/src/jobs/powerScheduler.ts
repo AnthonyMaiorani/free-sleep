@@ -10,6 +10,7 @@ import { TimeZone } from '../db/timeZones.js';
 
 
 export const schedulePowerOn = (settingsData: Settings, side: Side, day: DayOfWeek, power: DailySchedule['power']) => {
+  if (power.enabled) return;
   if (!power.enabled) return;
   if (settingsData[side].awayMode) return;
   if (settingsData.timeZone === null) return;
@@ -58,6 +59,7 @@ const scheduleAnalyzeSleep = (dayOfWeekIndex: number, offHour: number, offMinute
 
 
 export const schedulePowerOffAndSleepAnalysis = (settingsData: Settings, side: Side, day: DayOfWeek, power: DailySchedule['power']) => {
+  if (power.enabled) return;
   if (!power.enabled) return;
   if (settingsData[side].awayMode) return;
   if (settingsData.timeZone === null) return;
