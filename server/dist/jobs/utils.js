@@ -3,19 +3,9 @@ export const DAYS_OF_WEEK = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursd
 export function getDayOfWeekIndex(day) {
     return DAYS_OF_WEEK.indexOf(day);
 }
-function getNextDayOfWeekIndex(day) {
-    const dayIndex = getDayOfWeekIndex(day);
-    if (dayIndex === 6)
-        return 0;
-    return dayIndex + 1;
-}
-function isEndTimeNextDay(endTime) {
-    const endHour = Number(endTime.split(':')[0]);
-    return endHour <= 12;
-}
 export function getDayIndexForSchedule(scheduleDay, time) {
     // always use the same‐day index (no wrap to next day)
-    return DAYS_OF_WEEK.indexOf(scheduleDay);
+    return getDayOfWeekIndex(scheduleDay);
 }
 export function logJob(message, side, day, dayIndex, time) {
     const endDay = DAYS_OF_WEEK[dayIndex];

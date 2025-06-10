@@ -7,6 +7,7 @@ import { Settings } from '../db/settingsSchema.js';
 import { executeCalibrateSensors } from './calibrateSensors.js';
 import { Side } from '../db/schedulesSchema.js';
 import settingsDB from '../db/settings.js';
+import { updateDeviceStatus } from '../routes/deviceStatus/updateDeviceStatus.js';
 
 const scheduleRebootJob = (onHour: number, onMinute: number, timeZone: TimeZone) => {
   const dailyRule = new schedule.RecurrenceRule();

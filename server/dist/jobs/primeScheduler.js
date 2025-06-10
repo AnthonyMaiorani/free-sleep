@@ -4,6 +4,7 @@ import moment from 'moment-timezone';
 import logger from '../logger.js';
 import { executeCalibrateSensors } from './calibrateSensors.js';
 import settingsDB from '../db/settings.js';
+import { updateDeviceStatus } from '../routes/deviceStatus/updateDeviceStatus.js';
 const scheduleRebootJob = (onHour, onMinute, timeZone) => {
     const dailyRule = new schedule.RecurrenceRule();
     dailyRule.hour = onHour;
