@@ -9,7 +9,11 @@ export default defineConfig({
     host: '0.0.0.0', // This makes the server accessible to other devices on the network
     port: 5173, // Optional: specify a port if you want something other than the default
   },
+  // Tell Vite where to pick up your static assets
+  publicDir: 'public',
   build: {
+    // Don't clear outDir before every build
+    emptyOutDir: false,
     sourcemap: process.env.NODE_ENV === 'development',
     outDir: '../server/public/',
     rollupOptions: {

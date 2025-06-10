@@ -77,16 +77,6 @@ export default function TemperatureAdjustmentsAccordion({ displayCelsius }: { di
     updateSelectedTemperatures(temperaturesCopy);
   };
 
-  // Validate if the time is within the allowed range
-  const isTimeValid = (time: string): boolean => {
-    if (!selectedSchedule) return false;
-    const timeMoment = moment(time, 'HH:mm');
-    const powerOnMoment = moment(selectedSchedule.power.on, 'HH:mm');
-    const powerOffMoment = moment(selectedSchedule.power.off, 'HH:mm');
-    // only allow times between on and off on the same day
-    return timeMoment.isSameOrAfter(powerOnMoment) && timeMoment.isSameOrBefore(powerOffMoment);
-  };
-
   return (
     <Accordion
       sx={ { width: '100%' } }
@@ -118,16 +108,10 @@ export default function TemperatureAdjustmentsAccordion({ displayCelsius }: { di
                 <TextField
                   label="Time"
                   type="time"
-                  value={ time }
-                  sx={ { flexGrow: 1 } }
-                  onChange={ (event) => handleUpdateTime(time, event.target.value) }
-                  error={ !isTimeValid(time) }
-                  helperText={
-                    !isTimeValid(time)
-                      ? `Time must be between ${selectedSchedule?.power.on} and ${selectedSchedule?.power.off}`
-                      : ''
-                  }
-                  disabled={ isUpdating }
+                  value={time}
+                  sx={{ flexGrow: 1 }}
+                  onChange={(event) => handleUpdateTime(time, event.target.value)}
+                  disabled={isUpdating}
                 />
 
                 { /* Temperature selector */ }
