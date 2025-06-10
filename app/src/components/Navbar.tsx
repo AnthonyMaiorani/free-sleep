@@ -77,7 +77,7 @@ export default function Navbar() {
       >
         <Toolbar>
           <Typography variant="h6" component="div" sx={ { flexGrow: 1 } }>
-            { currentTitle || 'Free sleep' }
+            { currentTitle || 'Eight sleep' }
           </Typography>
           <Box sx={ { display: 'flex', gap: 2 } }>
             { PAGES.map(({ title, route }) => (

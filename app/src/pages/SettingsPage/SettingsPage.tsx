@@ -9,11 +9,8 @@ import { postSettings, useSettings } from '@api/settings.ts';
 import { useAppStore } from '@state/appStore.tsx';
 import DailyPriming from './DailyPriming.tsx';
 import DailyReboot from './DailyReboot.tsx';
-import LicenseModal from './LicenseModal.tsx';
 import PrimeControl from './PrimeControl.tsx';
 import LedBrightnessSlider from './LedBrightnessSlider.tsx';
-import Donate from './Donate.tsx';
-import DiscordLink from './DiscordLink.tsx';
 import Divider from './Divider.tsx';
 
 
@@ -53,13 +50,6 @@ export default function SettingsPage() {
       <SideSettings side="right" settings={ settings } updateSettings={ updateSettings }/>
       <Divider />
       <LedBrightnessSlider/>
-
-      <Divider />
-      <DiscordLink />
-      <Divider />
-      <Donate />
-      <Divider />
-      <LicenseModal/>
     </PageContainer>
   );
 }
