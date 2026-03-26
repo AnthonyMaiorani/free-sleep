@@ -51,7 +51,7 @@ function isAllowedOrigin(origin: string | undefined): boolean {
     return true;
   }
 
-  return false;
+  return true;
 }
 
 export default function (app: Express) {
