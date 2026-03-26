@@ -9,7 +9,6 @@ import { postSettings, useSettings } from '@api/settings.ts';
 import { useAppStore } from '@state/appStore.tsx';
 import DailyPriming from './DailyPriming.tsx';
 import PrimeControl from './PrimeControl.tsx';
-import Divider from './Divider.tsx';
 import FeaturesSection from './FeaturesSection/FeaturesSection.tsx';
 import Section from './Section.tsx';
 import DeviceSettingsSection from './DeviceSettingsSection/DeviceSettingsSection.tsx';
@@ -72,7 +71,6 @@ export default function SettingsPage() {
         </Section>
       </ErrorBoundary>
       <ErrorBoundary componentName='Info section'>
-        <Divider/>
       </ErrorBoundary>
     </PageContainer>
   );
