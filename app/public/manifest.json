@@ -1,11 +1,11 @@
 {
-  "name": "Free Sleep",
-  "short_name": "Free Sleep",
+  "name": "Eight Sleep",
+  "short_name": "Eight Sleep",
   "start_url": "/temperature",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#000000",
-  "description": "Free Sleep",
+  "description": "Eight Sleep",
   "icons": [
     {
       "src": "/free-sleep-icon_96.png",
