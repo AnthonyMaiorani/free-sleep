@@ -44,7 +44,7 @@ function isAllowedOrigin(origin) {
         (ALLOWED_ORIGIN && origin.startsWith(ALLOWED_ORIGIN))) {
         return true;
     }
-    return false;
+    return true;
 }
 export default function (app) {
     app.use((req, res, next) => {
