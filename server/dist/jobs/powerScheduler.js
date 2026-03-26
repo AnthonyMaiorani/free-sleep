@@ -10,6 +10,8 @@ import logger from '../logger.js';
 import servicesDB from '../db/services.js';
 import memoryDB from '../db/memoryDB.js';
 export const schedulePowerOn = (settingsData, side, day, power) => {
+    if (power.enabled)
+        return;
     if (!power.enabled)
         return;
     if (settingsData[side].awayMode)
@@ -78,6 +80,8 @@ const scheduleAnalyzeSleep = (dayOfWeekIndex, offHour, offMinute, timeZone, side
     });
 };
 export const schedulePowerOffAndSleepAnalysis = (settingsData, side, day, power) => {
+    if (power.enabled)
+        return;
     if (!power.enabled)
         return;
     if (settingsData[side].awayMode)
