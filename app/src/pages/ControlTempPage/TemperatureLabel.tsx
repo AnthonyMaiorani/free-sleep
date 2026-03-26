@@ -1,10 +1,6 @@
 import { Box, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import moment from 'moment-timezone';
 
-import { useSchedules } from '@api/schedules.ts';
-import { useSettings } from '@api/settings.ts';
-import { useAppStore } from '@state/appStore.tsx';
 import { formatTemperature } from '@lib/temperatureConversions.ts';
 
 
@@ -27,15 +23,6 @@ export default function TemperatureLabel({
   displayCelsius
 }: TemperatureLabelProps) {
   const theme = useTheme();
-  const { side } = useAppStore();
-  const { data: schedules } = useSchedules();
-  const { data: settings } = useSettings();
-  const isInAwayMode = settings?.[side].awayMode;
-
-  const currentDay = settings?.timeZone && moment.tz(settings?.timeZone).format('dddd').toLowerCase();
-  // @ts-expect-error
-  const power = currentDay ? schedules?.[side]?.[currentDay]?.power : undefined;
-  const formattedTime = moment(power?.on, 'HH:mm').format('h:mm A');
 
   let topTitle: string;
   // Handle user actively changing temp
@@ -130,16 +117,6 @@ export default function TemperatureLabel({
             >
               Off
             </Typography>
-            {
-              power?.enabled && !isInAwayMode && (
-                <Typography
-                  sx={ { textWrap: 'nowrap' } }
-                  color={ theme.palette.grey[800] }
-                >
-                  Turns on at { formattedTime }
-                </Typography>
-              )
-            }
           </Box>
         )
       }
