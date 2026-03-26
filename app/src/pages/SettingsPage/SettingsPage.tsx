@@ -8,10 +8,7 @@ import { Settings } from '@api/settingsSchema.ts';
 import { postSettings, useSettings } from '@api/settings.ts';
 import { useAppStore } from '@state/appStore.tsx';
 import DailyPriming from './DailyPriming.tsx';
-import LicenseModal from './LicenseModal.tsx';
 import PrimeControl from './PrimeControl.tsx';
-import Donate from './Donate.tsx';
-import DiscordLink from './DiscordLink.tsx';
 import Divider from './Divider.tsx';
 import FeaturesSection from './FeaturesSection/FeaturesSection.tsx';
 import Section from './Section.tsx';
@@ -75,10 +72,7 @@ export default function SettingsPage() {
         </Section>
       </ErrorBoundary>
       <ErrorBoundary componentName='Info section'>
-        <DiscordLink/>
-        <Donate/>
         <Divider/>
-        <LicenseModal/>
       </ErrorBoundary>
     </PageContainer>
   );
