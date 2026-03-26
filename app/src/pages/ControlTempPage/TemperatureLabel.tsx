@@ -36,7 +36,6 @@ export default function TemperatureLabel({
   // @ts-expect-error
   const power = currentDay ? schedules?.[side]?.[currentDay]?.power : undefined;
   const formattedTime = moment(power?.on, 'HH:mm').format('h:mm A');
-  const powerOffTime = moment(power?.off, 'HH:mm').format('h:mm A');
 
   let topTitle: string;
   // Handle user actively changing temp
@@ -108,16 +107,6 @@ export default function TemperatureLabel({
             >
               { `Currently at ${formatTemperature(currentTemperatureF, displayCelsius)}` }
             </Typography>
-            {
-              power?.enabled && (
-                <Typography
-                  sx={ { textWrap: 'nowrap' } }
-                  color={ theme.palette.grey[500] }
-                >
-                  Turns off at { powerOffTime }
-                </Typography>
-              )
-            }
           </Box>
         ) : (
           <Box
