@@ -97,7 +97,7 @@ export default function Slider({ isOn, currentTargetTemp, refetch, currentTemper
               }
             },
           } }
-          handleSize={ 8 }
+          handleSize={ 20 }
         >
           <TemperatureLabel
             isOn={ isOn }
