@@ -73,10 +73,15 @@ export default function TemperatureLabel({
             } }
           >
             <Typography
-              sx={ { textWrap: 'nowrap', textAlign: 'center' } }
+              sx={ {
+                textWrap: 'nowrap',
+                textAlign: 'center',
+                minHeight: '1.5rem',
+                visibility: topTitle ? 'visible' : 'hidden',
+              } }
               color={ theme.palette.grey[400] }
             >
-              { topTitle }
+              { topTitle || ' ' }
             </Typography>
 
             { /* Temperature */ }
