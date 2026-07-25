@@ -77,26 +77,16 @@ export default function Slider({ isOn, currentTargetTemp, refetch, currentTemper
             axis: '-y'
           } }
           handle1={ {
-            value: minTemp,
+            value: deviceStatus?.[side]?.targetTemperatureF ?? currentTargetTemp ?? 55,
             onChange: (value) => {
               if (disabled) return;
               if (Math.round(value) !== deviceStatus?.[side]?.targetTemperatureF) {
                 setDeviceStatus({ [side]: { targetTemperatureF: Math.round(value) } });
               }
             },
-
           } }
           arcColor={ isOn ? sliderColor : arcBackgroundColor }
           arcBackgroundColor={ arcBackgroundColor }
-          handle2={ {
-            value: maxTemp,
-            onChange: (value) => {
-              if (disabled) return;
-              if (Math.round(value) !== deviceStatus?.[side]?.targetTemperatureF) {
-                setDeviceStatus({ [side]: { targetTemperatureF: Math.round(value) } });
-              }
-            },
-          } }
           handleSize={ 8 }
         >
           <TemperatureLabel
